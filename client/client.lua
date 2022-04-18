@@ -475,7 +475,7 @@ RegisterCommand("cameras", function(source, args, rawCommand)
         a, ListCameras = ipairs(CameraProp)
 
         if json.encode(ListCameras) == "[]" then
-            QBCore.Functions.Notify('', 'error')
+            QBCore.Functions.Notify('You dont have any cameras connected!', 'error')
         else
             if not PlacingCamera then
                 if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[1])) < Config.DistanceToConnect then
