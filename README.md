@@ -14,3 +14,21 @@ This is a fork of the ESX Resource [kim-camera](https://github.com/quimalborch/k
 * Synchronize the movement of the camera when you turn the direction with other users
 * Being able to zoom and unzoom in the camera
 * Ability to shoot and destroy cameras so players cannot use them anymore
+
+>## **Installation**
+#### Add this so your `qb-core/shared/items.lua`
+```lua
+['camera'] = {
+        ['name'] = 'camera',
+        ['label'] = 'CCTV Camera',
+        ['weight'] = 1000,
+        ['type'] = 'item',
+        ['image'] = 'camera.png',
+        ['unique'] = true,
+        ['useable'] = true,
+        ['shouldClose'] = true,
+        ['combinable'] = nil,
+        ['description'] = 'A CCTV Camera... wonder what you can do with this'
+    },
+```
+#### After placing cameras down, look through them with the `/cameras` command
