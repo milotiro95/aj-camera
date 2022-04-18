@@ -31,37 +31,31 @@ local function OpenCamAnim()
     end
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
-    -- local animPos = GetAnimInitialOffsetPosition(animDict, "hack_loop")
-    
-
+    -- local animPos = GetAnimInitialOffsetPosition(animDict, "hack_loop")]
     laptop = CreateObject(`hei_prop_hst_laptop`, pos.x, pos.y, pos.z + 0.40, 1, 1, 0)
     -- SetEntityCollision(laptop, false, false)
     SetEntityHeading(laptop, GetEntityHeading(ped))
-
     local LaptopCoords = GetEntityCoords(laptop)
-
     local HackLoop = NetworkCreateSynchronisedScene(LaptopCoords, GetEntityRotation(laptop), 0, true, true, 1065353216, 0, 1.3)
     NetworkAddPedToSynchronisedScene(ped, HackLoop, animDict, "hack_loop", 3.0, 3.0, 1, 16, 1148846080, 0)
     NetworkAddEntityToSynchronisedScene(laptop, HackLoop, animDict, "hack_loop_laptop", 4.0, -8.0, 1)
-
     HackLoopFinish = NetworkCreateSynchronisedScene(LaptopCoords, GetEntityRotation(laptop), 0, true, true, 1065353216, 0, 1.3)
     NetworkAddPedToSynchronisedScene(ped, HackLoopFinish, animDict, "hack_exit", 3.0, 3.0, 1, 16, 1148846080, 0)
     NetworkAddEntityToSynchronisedScene(laptop, HackLoopFinish, animDict, "hack_exit_laptop", 4.0, -8.0, 1)
-
     NetworkStartSynchronisedScene(HackLoop)
 end
 
 local function RotationToDirection(rotation)
-    local adjustedRotation = 
-    { 
-        x = (math.pi / 180) * rotation.x, 
-        y = (math.pi / 180) * rotation.y, 
-        z = (math.pi / 180) * rotation.z 
-    }
-    local direction = 
+    local adjustedRotation =
     {
-        x = -math.sin(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)), 
-        y = math.cos(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)), 
+        x = (math.pi / 180) * rotation.x,
+        y = (math.pi / 180) * rotation.y,
+        z = (math.pi / 180) * rotation.z
+    }
+    local direction =
+    {
+        x = -math.sin(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+        y = math.cos(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
         z = math.sin(adjustedRotation.x)
     }
     return direction
@@ -94,22 +88,19 @@ end
 local function setupScaleform(scaleform)
     local scaleform = RequestScaleformMovie(scaleform)
     while not HasScaleformMovieLoaded(scaleform) do
-        Citizen.Wait(0)
+        Wait(0)
     end
-
-    -- draw it once to set up layout
-    --DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 0, 0)
 
     PushScaleformMovieFunction(scaleform, "CLEAR_ALL")
     PopScaleformMovieFunctionVoid()
-    
+
     PushScaleformMovieFunction(scaleform, "SET_CLEAR_SPACE")
     PushScaleformMovieFunctionParameterInt(200)
     PopScaleformMovieFunctionVoid()
 
     PushScaleformMovieFunction(scaleform, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(0)
-    Button(GetControlInstructionalButton(2, 194, true)) 
+    Button(GetControlInstructionalButton(2, 194, true))
     ButtonMessage("Exit Camera")
     PopScaleformMovieFunctionVoid()
 
@@ -175,14 +166,14 @@ local function setupScaleform(scaleform)
 end
 
 local function AnimTablet()
-    Citizen.CreateThread(function()
+    CreateThread(function()
         local playerPed = PlayerPedId()
         SetCurrentPedWeapon(playerPed, 'weapon_unarmed', true)
         form = setupScaleform("instructional_buttons")
-        Citizen.CreateThread(function()
+        CreateThread(function()
             while UsingPanel do
                 DrawScaleformMovieFullscreen(form, 255, 255, 255, 255, 0)
-                Citizen.Wait(1)
+                Wait(1)
             end
         end)
     end)
@@ -190,7 +181,7 @@ end
 
 local function ExitMenuCamera()
     DoScreenFadeOut(500)
-    Citizen.Wait(500)
+    Wait(500)
 
     UsingPanel = false
     DetachEntity(PropTablet, true, false)
@@ -206,10 +197,8 @@ local function ExitMenuCamera()
     })
     DestroyCam(CamTemporal)
     RenderScriptCams(0, 0, 1, 1, 1)
-    Citizen.Wait(500)
-    -- RenderScriptCams(false, true, 2000, true, true)
+    Wait(500)
     DoScreenFadeIn(500)
-    -- NetworkStopSynchronisedScene(HackLoop)
     NetworkStartSynchronisedScene(HackLoopFinish)
     Wait(1500)
     NetworkStopSynchronisedScene(HackLoopFinish)
@@ -219,19 +208,16 @@ local function ExitMenuCamera()
 end
 
 local function MakeInvProp()
-    Citizen.CreateThread(function()
+    CreateThread(function()
         while UsingPanel do
             SetEntityLocallyInvisible(CameraProp[ActualCamera])
-            Citizen.Wait(1)
+            Wait(1)
         end
     end)
 end
 
 local function GoPanelCamera()
     UsingPanel = true
-    -- AnimTablet()
-    -- Citizen.Wait(2000)
-
     NumberCameras = 0
     ActualCamera = 1
 
@@ -244,23 +230,22 @@ local function GoPanelCamera()
 
     DoScreenFadeOut(500)
     OpenCamAnim()
-    Citizen.Wait(750)
+    Wait(750)
     AnimTablet()
     DisplayRadar(false)
 
     SetTimecycleModifier("scanline_cam_cheap")
-    -- SetTimecycleModifierStrength(1.5)
 
     SetCamActive(CamTemporal, true)
     RenderScriptCams(true, false, 100, true, false)
     MakeInvProp()
 
-    Citizen.Wait(500)
+    Wait(500)
     DoScreenFadeIn(500)
     NeedToCheck = true
     LocalPlayer.state:set("inv_busy", true, true)
 
-    Citizen.CreateThread(function()
+    CreateThread(function()
         while true do
             if IsControlJustPressed(0, 35) then
 
@@ -270,13 +255,13 @@ local function GoPanelCamera()
 
                         NeedToCheck = true
                         DoScreenFadeOut(500)
-                        Citizen.Wait(500)
+                        Wait(500)
 
                         CoordsCameraVirtual = GetEntityCoords(CameraProp[ActualCamera])
                         SetCamCoord(CamTemporal, CoordsCameraVirtual + vector3(0.0, 0.0, -0.3))
                         SetCamRot(CamTemporal, 0.0, 0.0, GetEntityHeading(CameraProp[ActualCamera]) - 180)
 
-                        Citizen.Wait(200)
+                        Wait(200)
                         DoScreenFadeIn(500)
                     else
                         QBCore.Functions.Notify('You are too far away to establish connection with the camera', 'error')
@@ -291,16 +276,16 @@ local function GoPanelCamera()
                 if ActualCamera > 1 then
                     if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[ActualCamera - 1])) < Config.DistanceToConnect then
                     ActualCamera = ActualCamera - 1
-                    
+
                     NeedToCheck = true
                     DoScreenFadeOut(500)
-                    Citizen.Wait(500)
+                    Wait(500)
 
                     CoordsCameraVirtual = GetEntityCoords(CameraProp[ActualCamera])
                     SetCamCoord(CamTemporal, CoordsCameraVirtual + vector3(0.0, 0.0, -0.3))
                     SetCamRot(CamTemporal, 0.0, 0.0, GetEntityHeading(CameraProp[ActualCamera]) - 180, 1)
 
-                    Citizen.Wait(200)
+                    Wait(200)
                     DoScreenFadeIn(500)
                     else
                         QBCore.Functions.Notify("You are too far away to establish connection with the camera", 'error')
@@ -344,23 +329,23 @@ local function GoPanelCamera()
             end
 
             if IsControlPressed(1, 10) then
-                if GetCamFov(CamTemporal) > 30 then 
+                if GetCamFov(CamTemporal) > 30 then
                     SetCamFov(CamTemporal, GetCamFov(CamTemporal) - 1.0)
                 end
             end
 
             if IsControlPressed(1, 11) then
-                if GetCamFov(CamTemporal) < 100 then 
+                if GetCamFov(CamTemporal) < 100 then
                     SetCamFov(CamTemporal, GetCamFov(CamTemporal) + 1.0)
                 end
             end
 
             local s1, s2 = GetStreetNameAtCoord(CoordsCameraVirtual.x, CoordsCameraVirtual.y, CoordsCameraVirtual.z)
             local street = GetStreetNameFromHashKey(s1)
-        
+
             if NeedToCheck then
                 if GetEntityHealth(CameraProp[ActualCamera]) > 881 then
-                    SetTimecycleModifierStrength(1.5)
+                    SetTimecycleModifierStrength(tonumber(Config.TimecycleStrength))
                     SendNUIMessage({
                         type = "frontcam",
                         toggle = true,
@@ -381,7 +366,7 @@ local function GoPanelCamera()
                 NeedToCheck = false
             end
 
-            Citizen.Wait(5)
+            Wait(5)
         end
     end)
 end
@@ -400,11 +385,12 @@ RegisterNetEvent("aj-camera:client:PlaceCamera", function()
         NetworkRegisterEntityAsNetworked(CameraProp[CountCamera])
 
         QBCore.Functions.Notify('Press [E] to place the camera', 'primary', 7500)
+        QBCore.Functions.Notify('Press left and right arrow keys to rotate', 'primary', 7500)
 
-        Citizen.CreateThread(function()
+        CreateThread(function()
             while true do
                 PlayerCoords = GetEntityCoords(PlayerPedId())
-                a, CoordsCamera, c = RayCastGamePlayCamera(15)
+                a, CoordsCamera, c = RayCastGamePlayCamera(tonumber(Config.PlaceDistance))
                 if CoordsCamera ~= NoLocation then
                     SetEntityVisible(CameraProp[CountCamera], true)
                     SetEntityCoords(CameraProp[CountCamera], CoordsCamera + vector3(0, 0.0, 0))
@@ -421,7 +407,7 @@ RegisterNetEvent("aj-camera:client:PlaceCamera", function()
                         if IsControlPressed(0, 174) then
                             SetEntityRotation(CameraProp[CountCamera], 0, 0, GetEntityHeading(CameraProp[CountCamera]) + 1.0, 2, true)
                         end
-            
+
                         if IsControlPressed(0, 175) then
                             SetEntityRotation(CameraProp[CountCamera], 0, 0, GetEntityHeading(CameraProp[CountCamera]) - 1.0, 2, true)
                         end
@@ -445,7 +431,7 @@ RegisterNetEvent("aj-camera:client:PlaceCamera", function()
                         --     CameraProp[CountCamera] = CreateObject(GetHashKey(objects[slot]), 0, 0, 0, true, true, true)
                         --     SetEntityCollision(CameraProp[CountCamera], false, false)
                         -- end
-            
+
                         if IsControlJustPressed(0, 38) then
                             PlacingCamera = false
                             SetEntityCollision(CameraProp[CountCamera], true, true)
@@ -468,7 +454,7 @@ RegisterNetEvent("aj-camera:client:PlaceCamera", function()
                     end
                 end
 
-                Citizen.Wait(3)
+                Wait(3)
             end
         end)
 end)
@@ -491,7 +477,7 @@ RegisterCommand("cameras", function(source, args, rawCommand)
         if json.encode(ListCameras) == "[]" then
             QBCore.Functions.Notify('You dont have any cameras connected!', 'error')
         else
-            if not PlacingCamera then 
+            if not PlacingCamera then
                 if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[1])) < Config.DistanceToConnect then
                     GoPanelCamera()
                 else
