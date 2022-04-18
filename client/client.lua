@@ -475,7 +475,7 @@ RegisterCommand("cameras", function(source, args, rawCommand)
         a, ListCameras = ipairs(CameraProp)
 
         if json.encode(ListCameras) == "[]" then
-            QBCore.Functions.Notify('You dont have any cameras connected!', 'error')
+            QBCore.Functions.Notify('', 'error')
         else
             if not PlacingCamera then
                 if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[1])) < Config.DistanceToConnect then
@@ -484,6 +484,26 @@ RegisterCommand("cameras", function(source, args, rawCommand)
                     QBCore.Functions.Notify('You cant seem to connect to the cameras', 'error')
                 end
             end
+        end
+    end
+end)
+
+RegisterCommand("camerasremove", function(source, args, rawCommand)
+    if not IsPedInAnyVehicle(PlayerPedId(), true) then
+        a, ListCameras = ipairs(CameraProp)
+
+        if json.encode(ListCameras) == "[]" then
+            QBCore.Functions.Notify('You dont have any cameras connected!', 'error')
+        else
+
+                if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[1])) < Config.DistanceToConnect then
+                    PlacingCamera = false
+                    DeleteEntity(CameraProp[CountCamera])
+                    CountCamera = CountCamera - 1
+                    TriggerServerEvent('aj-camera:server:GiveCamBack')
+                else
+                    QBCore.Functions.Notify('You cant seem to connect to the cameras', 'error')
+                end
         end
     end
 end)
