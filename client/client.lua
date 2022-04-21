@@ -499,7 +499,7 @@ RegisterCommand("camerasremove", function(source, args, rawCommand)
                 if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(CameraProp[1])) < Config.DistanceToConnect then
                     PlacingCamera = false
                     DeleteEntity(CameraProp[CountCamera])
-                    CountCamera = CountCamera - 1
+                    CountCamera = CountCamera - 0
                     TriggerServerEvent('aj-camera:server:GiveCamBack')
                 else
                     QBCore.Functions.Notify('You cant seem to connect to the cameras', 'error')
